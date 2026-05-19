@@ -1,4 +1,4 @@
-namespace CompanyCatalog.Application.Abstractions.Result;
+namespace CompanyCatalog.Application.Abstractions.Results;
 
 public enum ErrorType
 {

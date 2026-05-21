@@ -2,6 +2,7 @@ using CompanyCatalog.Application.Abstractions.Authentication;
 using CompanyCatalog.Application.Abstractions.Persistence;
 using CompanyCatalog.Infrastructure.Authentication;
 using CompanyCatalog.Infrastructure.Persistence;
+using CompanyCatalog.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +20,7 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
 
-        services.AddScoped<IUserRepository, IUserRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IJwtService, JwtService>();

@@ -1,6 +1,12 @@
+using System.Text;
+using CompanyCatalog.Api.Endpoints;
 using CompanyCatalog.Api.Middleware;
 using CompanyCatalog.Application;
 using CompanyCatalog.Infrastructure;
+using CompanyCatalog.Infrastructure.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 using Serilog;
 
@@ -11,7 +17,10 @@ builder.Host.UseSerilog((context, config) => config.ReadFrom.Configuration(conte
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    // hata Var - düzelt
+});
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -22,11 +31,34 @@ builder.Services.AddHealthChecks()
         name: "postgres",
         tags: new[] { "db", "ready" });
 
+var jwtOptions = builder.Configuration
+    .GetSection(JwtOptions.SectionName)
+    .Get<JwtOptions>()!;
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opt =>
+    {
+        opt.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtOptions.Issuer,
+            ValidAudience = jwtOptions.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey)),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 app.UseExceptionHandler();
 
 app.UseSerilogRequestLogging();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
@@ -44,6 +76,7 @@ app.MapHealthChecks("/health/ready", new()
     Predicate = check => check.Tags.Contains("ready")
 });
 
+app.MapAuthEndpoints();
 app.MapGet("/", () => "Company Catalog API");
 
 try

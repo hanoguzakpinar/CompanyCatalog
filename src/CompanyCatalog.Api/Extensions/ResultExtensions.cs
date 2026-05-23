@@ -7,9 +7,7 @@ public static class ResultExtensions
     public static IResult ToHttpResult<T>(this Result<T> result, Func<T, IResult>? onSuccess = null)
     {
         if (result.IsSuccess)
-        {
             return onSuccess?.Invoke(result.Value) ?? Results.Ok(result.Value);
-        }
 
         return result.Error.Type switch
         {
@@ -25,7 +23,7 @@ public static class ResultExtensions
 
             ErrorType.Validation => Results.Problem(
                 statusCode: StatusCodes.Status400BadRequest,
-                title: "Validation Hatası",
+                title: "Validation hatası",
                 detail: result.Error.Message,
                 extensions: new Dictionary<string, object?>
                 {
@@ -60,6 +58,41 @@ public static class ResultExtensions
                 title: "Bir hata meydana geldi.",
                 detail: result.Error.Message
             )
+        };
+    }
+
+    public static IResult ToHttpResult(this Result result)
+    {
+        if (result.IsSuccess)
+            return Results.NoContent();
+
+        return result.Error.Type switch
+        {
+            ErrorType.NotFound => Results.Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Kaynak bulunamadı",
+                detail: result.Error.Message,
+                extensions: new Dictionary<string, object?>
+                    { ["code"] = result.Error.Code }),
+
+            ErrorType.Validation => Results.Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Validation hatası",
+                detail: result.Error.Message,
+                extensions: new Dictionary<string, object?>
+                    { ["code"] = result.Error.Code }),
+
+            ErrorType.Conflict => Results.Problem(
+                statusCode: StatusCodes.Status409Conflict,
+                title: "Conflict",
+                detail: result.Error.Message,
+                extensions: new Dictionary<string, object?>
+                    { ["code"] = result.Error.Code }),
+
+            _ => Results.Problem(
+                statusCode: StatusCodes.Status500InternalServerError,
+                title: "Bir hata meydana geldi.",
+                detail: result.Error.Message)
         };
     }
 }

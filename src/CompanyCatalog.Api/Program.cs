@@ -49,7 +49,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
     });
-builder.Services.AddAuthorization();
+
+builder.Services.AddAuthorization(opt => { opt.AddPolicy("AdminOnly", policy => { policy.RequireRole("Admin"); }); });
 
 var app = builder.Build();
 
@@ -77,6 +78,7 @@ app.MapHealthChecks("/health/ready", new()
 });
 
 app.MapAuthEndpoints();
+app.MapCompanyEndpoints();
 app.MapGet("/", () => "Company Catalog API");
 
 try

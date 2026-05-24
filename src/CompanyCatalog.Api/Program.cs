@@ -1,6 +1,7 @@
 using System.Text;
 using CompanyCatalog.Api.Endpoints;
 using CompanyCatalog.Api.Middleware;
+using CompanyCatalog.Api.OpenApi;
 using CompanyCatalog.Application;
 using CompanyCatalog.Infrastructure;
 using CompanyCatalog.Infrastructure.Authentication;
@@ -17,10 +18,7 @@ builder.Host.UseSerilog((context, config) => config.ReadFrom.Configuration(conte
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddOpenApi(options =>
-{
-    // hata Var - düzelt
-});
+builder.Services.AddOpenApi(options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -79,7 +77,6 @@ app.MapHealthChecks("/health/ready", new()
 
 app.MapAuthEndpoints();
 app.MapCompanyEndpoints();
-app.MapGet("/", () => "Company Catalog API");
 
 try
 {

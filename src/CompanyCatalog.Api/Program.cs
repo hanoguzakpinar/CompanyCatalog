@@ -77,6 +77,7 @@ app.MapHealthChecks("/health/ready", new()
 
 app.MapAuthEndpoints();
 app.MapCompanyEndpoints();
+app.MapCategoryEndpoints();
 
 try
 {

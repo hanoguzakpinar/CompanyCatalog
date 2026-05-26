@@ -75,4 +75,72 @@ public sealed class Product : AggregateRoot<Guid>
             categoryId
         );
     }
+
+    public void UpdateDetails(string name, string? description, decimal price)
+    {
+        if (string.IsNullOrWhiteSpace(name) || name.Length < 2)
+            throw new DomainException("Ürün ismi en az 2 karakter olmalıdır.");
+        if (name.Length > 200)
+            throw new DomainException("Ürün ismi maksimum 200 karakter olmalıdır.");
+        if (description != null && description.Length > 1000)
+            throw new DomainException("Açıklama maksimum 1000 karakter olmalıdır.");
+        if (price < 0)
+            throw new DomainException("Fiyat, negatif olamaz.");
+
+        Name = name.Trim();
+        Description = description?.Trim();
+        Price = price;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void UpdateSku(string newSku)
+    {
+        if (string.IsNullOrWhiteSpace(newSku) || newSku.Length < 3)
+            throw new DomainException("SKU en az 3 karakter olmalıdır.");
+        if (newSku.Length > 50)
+            throw new DomainException("SKU maksimum 50 karakter olmalıdır.");
+
+        Sku = newSku.Trim().ToUpperInvariant();
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void AddStock(int quantity)
+    {
+        if (quantity <= 0)
+            throw new DomainException("Adet, sıfırdan büyük olmalıdır.");
+
+        StockQuantity += quantity;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void RemoveStock(int quantity)
+    {
+        if (quantity <= 0)
+            throw new DomainException("Adet, sıfırdan büyük olmalıdır.");
+
+        if (quantity > StockQuantity)
+            throw new DomainException(
+                $"Stok yetersiz. Mevcut Stok: {StockQuantity} , Düşülmek İstenen Stok: {quantity}");
+
+        StockQuantity += quantity;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Deactivate()
+    {
+        if (!IsActive)
+            throw new DomainException("Ürün zaten inaktif durumdadır.");
+
+        IsActive = false;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Activate()
+    {
+        if (IsActive)
+            throw new DomainException("Ürün zaten aktif durumdadır.");
+
+        IsActive = true;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

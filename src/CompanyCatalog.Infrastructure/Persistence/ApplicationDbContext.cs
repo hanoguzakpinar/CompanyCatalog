@@ -1,6 +1,7 @@
 using CompanyCatalog.Application.Abstractions.Persistence;
 using CompanyCatalog.Domain.Categories;
 using CompanyCatalog.Domain.Companies;
+using CompanyCatalog.Domain.Products;
 using CompanyCatalog.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
     public DbSet<Company> Companies => Set<Company>();
     public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Product> Products => Set<Product>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

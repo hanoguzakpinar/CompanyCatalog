@@ -8,9 +8,9 @@ namespace CompanyCatalog.Application.Products.Commands.ToggleProduct;
 internal sealed class ToggleProductHandler(
     IProductRepository productRepository,
     IUnitOfWork unitOfWork
-) : IRequestHandler<ToggleProductCommand, Result>
+) : IRequestHandler<ToggleProductStatusCommand, Result>
 {
-    public async Task<Result> Handle(ToggleProductCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(ToggleProductStatusCommand request, CancellationToken cancellationToken)
     {
         var product = await productRepository.GetByIdAsync(request.Id, cancellationToken);
         if (product is null)

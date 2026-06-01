@@ -3,4 +3,4 @@ using MediatR;
 
 namespace CompanyCatalog.Application.Products.Commands.ToggleProduct;
 
-public sealed record ToggleProductCommand(Guid Id) : IRequest<Result>;
+public sealed record ToggleProductStatusCommand(Guid Id) : IRequest<Result>;

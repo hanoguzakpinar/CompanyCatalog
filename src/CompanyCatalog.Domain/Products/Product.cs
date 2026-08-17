@@ -122,7 +122,7 @@ public sealed class Product : AggregateRoot<Guid>
             throw new DomainException(
                 $"Stok yetersiz. Mevcut Stok: {StockQuantity} , Düşülmek İstenen Stok: {quantity}");
 
-        StockQuantity += quantity;
+        StockQuantity -= quantity;
         UpdatedAt = DateTime.UtcNow;
     }
 

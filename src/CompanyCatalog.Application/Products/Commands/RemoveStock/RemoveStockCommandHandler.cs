@@ -1,6 +1,5 @@
 using CompanyCatalog.Application.Abstractions.Persistence;
 using CompanyCatalog.Application.Abstractions.Results;
-using CompanyCatalog.Application.Products.Commands.AddStock;
 using CompanyCatalog.Domain.Common;
 using MediatR;
 
@@ -9,9 +8,9 @@ namespace CompanyCatalog.Application.Products.Commands.RemoveStock;
 internal sealed class RemoveStockCommandHandler(
     IUnitOfWork unitOfWork,
     IProductRepository productRepository
-) : IRequestHandler<AddStockCommand, Result>
+) : IRequestHandler<RemoveStockCommand, Result>
 {
-    public async Task<Result> Handle(AddStockCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(RemoveStockCommand request, CancellationToken cancellationToken)
     {
         var product = await productRepository.GetByIdAsync(request.ProductId, cancellationToken);
         if (product is null)

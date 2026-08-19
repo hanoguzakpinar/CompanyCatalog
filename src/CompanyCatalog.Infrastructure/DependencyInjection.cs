@@ -3,6 +3,7 @@ using CompanyCatalog.Application.Abstractions.Persistence;
 using CompanyCatalog.Infrastructure.Authentication;
 using CompanyCatalog.Infrastructure.Persistence;
 using CompanyCatalog.Infrastructure.Persistence.Repositories;
+using CompanyCatalog.Infrastructure.Persistence.Seed;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,8 @@ public static class DependencyInjection
         services.AddSingleton<IJwtService, JwtService>();
 
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+
+        services.AddScoped<DatabaseSeeder>();
 
         return services;
     }

@@ -5,6 +5,7 @@ using CompanyCatalog.Api.OpenApi;
 using CompanyCatalog.Application;
 using CompanyCatalog.Infrastructure;
 using CompanyCatalog.Infrastructure.Authentication;
+using CompanyCatalog.Infrastructure.Persistence.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -58,6 +59,13 @@ app.UseSerilogRequestLogging();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider
+        .GetRequiredService<DatabaseSeeder>();
+    await seeder.SeedAsync();
+}
 
 if (app.Environment.IsDevelopment())
 {
